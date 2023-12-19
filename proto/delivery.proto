@@ -1,0 +1,14 @@
+syntax = "proto3";
+package wbl;
+
+option go_package = "pkg/proto";
+
+message Delivery {
+  string name = 1;
+  string phone = 2;
+  string zip = 3;
+  string city = 4;
+  string address = 5;
+  string region = 6;
+  string email = 7;
+}

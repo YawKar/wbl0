@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/YawKar/wbl0/pkg/proto"
 	"github.com/YawKar/wbl0/pkg/storage"
 )
 
@@ -27,6 +28,7 @@ type LogConfig struct {
 }
 
 func setAndParseFlagsIntoConfig() (c Config) {
+	_ = proto.Delivery{}
 	flag.StringVar(&c.NatsConfig.natsUrl, "nats-url", "nats://127.0.0.1:4222",
 		"set nats-streaming node's url")
 	flag.StringVar(&c.NatsConfig.clusterId, "cluster-id", "default_cluster",

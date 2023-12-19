@@ -8,6 +8,10 @@
 			"repo": "amacneil/dbmate",
 			"binaryNames": "dbmate",
 			"version": "v2.9.0"
+		},
+		"ghcr.io/devcontainers-contrib/features/protoc": {},
+		"ghcr.io/azutake/devcontainer-features/go-packages-install": {
+			"PACKAGES": "google.golang.org/protobuf/cmd/protoc-gen-go@latest"
 		}
 	},
 	"runArgs": [
@@ -16,7 +20,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"cweijan.vscode-postgresql-client2"
+				"cweijan.vscode-postgresql-client2",
+				"zxh404.vscode-proto3"
 			],
 			"settings": {
 				"database-client.telemetry.usesOnlineServices": false,
