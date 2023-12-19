@@ -1,0 +1,18 @@
+syntax = "proto3";
+package wbl;
+
+option go_package = "pkg/proto";
+
+message Item {
+  string chrt_id = 1;
+  string track_number = 2;
+  int64 price = 3;
+  string rid = 4;
+  string name = 5;
+  int64 sale = 6;
+  string size = 7;
+  int64 total_price = 8;
+  int64 nm_id = 9;
+  string brand = 10;
+  int32 status = 11;
+}

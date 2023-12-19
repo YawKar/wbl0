@@ -1,0 +1,17 @@
+syntax = "proto3";
+package wbl;
+
+option go_package = "pkg/proto";
+
+message Payment {
+  string transaction = 1;
+  string request_id = 2;
+  string currency = 3;
+  string provider = 4;
+  int64 amount = 5;
+  int64 payment_dt = 6;
+  string bank = 7;
+  int64 delivery_cost = 8;
+  int64 goods_total = 9;
+  int64 custom_fee = 10;
+}

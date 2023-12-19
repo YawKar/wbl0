@@ -1,0 +1,27 @@
+syntax = "proto3";
+package wbl;
+
+option go_package = "pkg/proto";
+
+import "proto/delivery.proto";
+import "proto/payment.proto";
+import "proto/item.proto";
+
+import "google/protobuf/timestamp.proto";
+
+message Order {
+  string order_uid = 1;
+  string track_number = 2;
+  string entry = 3;
+  wbl.Delivery delivery = 4;
+  wbl.Payment payment = 5;
+  repeated wbl.Item items = 6;
+  string locale = 7;
+  string internal_signature = 8;
+  string customer_id = 9;
+  string delivery_service = 10;
+  string shard_key = 11;
+  int64 sm_id = 12;
+  google.protobuf.Timestamp date_created = 13;
+  string oof_shard = 14;
+}
