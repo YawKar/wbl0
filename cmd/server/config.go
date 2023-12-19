@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/YawKar/wbl0/pkg/proto"
-	"github.com/YawKar/wbl0/pkg/storage"
+	"github.com/yawkar/wbl0/pkg/proto"
+	"github.com/yawkar/wbl0/pkg/storage"
 )
 
 type Config struct {

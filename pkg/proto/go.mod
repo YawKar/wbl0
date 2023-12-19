@@ -1,4 +1,4 @@
-module github.com/YawKar/wbl0/pkg/proto
+module github.com/yawkar/wbl0/pkg/proto
 
 go 1.21.5
 

@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/YawKar/wbl0/pkg/storage"
 	"github.com/nats-io/stan.go"
 	"github.com/patrickmn/go-cache"
+	"github.com/yawkar/wbl0/pkg/storage"
 )
 
 func main() {

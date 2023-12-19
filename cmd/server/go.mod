@@ -1,4 +1,4 @@
-module github.com/YawKar/wbl0/cmd/server
+module github.com/yawkar/wbl0/cmd/server
 
 go 1.21.5
 

@@ -1,4 +1,4 @@
-module github.com/YawKar/wbl0/pkg/storage
+module github.com/yawkar/wbl0/pkg/storage
 
 go 1.21.5
 
