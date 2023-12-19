@@ -2,35 +2,61 @@ package storage
 
 import (
 	"database/sql"
-	"log"
-	"time"
 
-	"github.com/lib/pq"
 	"github.com/patrickmn/go-cache"
+	"github.com/yawkar/wbl0/pkg/models"
 )
 
-type DbConfig struct {
-	DbUrl string
+type Storage struct {
+	cache *cache.Cache
+	db    *sql.DB
 }
 
-func MkDb(c *DbConfig) (*sql.DB, error) {
-	pqc, err := pq.NewConnector(c.DbUrl)
+type StorageConfig struct {
+	dbConfig
+	cacheConfig
+}
+
+func MkStorage(c *StorageConfig, loadCaches bool) (*Storage, error) {
+	// TODO
+}
+
+func (s *Storage) BeginTx() (*sql.Tx, error) {
+	return s.db.Begin()
+}
+
+func (s *Storage) InsertOrder(order *models.Order) error {
+	tx, err := s.db.Begin()
 	if err != nil {
-		return nil, err
+		return nil
 	}
-	db := sql.OpenDB(pqc)
-	if err = db.Ping(); err != nil {
-		log.Fatalln("Couldn't ping db:", err)
-	}
-	return db, nil
+	defer tx.Rollback()
+	// TODO
 }
 
-type CacheConfig struct {
-	CacheExpiration time.Duration
-	CleanupInterval time.Duration
+func (s *Storage) InsertPayment(payment *models.Payment) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil
+	}
+	defer tx.Rollback()
+	// TODO
 }
 
-func MkCache(c *CacheConfig) (*cache.Cache, error) {
-	cache := cache.New(c.CacheExpiration, c.CleanupInterval)
-	return cache, nil
+func (s *Storage) InsertDelivery(delivery *models.Delivery) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil
+	}
+	defer tx.Rollback()
+	// TODO
+}
+
+func (s *Storage) InsertItem(item *models.Item) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil
+	}
+	defer tx.Rollback()
+	// TODO
 }

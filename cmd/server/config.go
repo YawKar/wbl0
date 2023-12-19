@@ -11,8 +11,7 @@ import (
 
 type Config struct {
 	NatsConfig
-	storage.DbConfig
-	storage.CacheConfig
+	storage.StorageConfig
 	LogConfig
 }
 
@@ -34,10 +33,10 @@ func setAndParseFlagsIntoConfig() (c Config) {
 	flag.StringVar(&c.NatsConfig.clientId, "client-id", "default_client",
 		"set nats-streaming client's id")
 
-	flag.StringVar(&c.DbConfig.DbUrl, "db-url", "", "set database url")
+	flag.StringVar(&c.StorageConfig.DbUrl, "db-url", "", "set database url")
 
-	flag.DurationVar(&c.CacheConfig.CacheExpiration, "cache-expire", 3*time.Minute, "set cache expiration time")
-	flag.DurationVar(&c.CacheConfig.CleanupInterval, "cache-cleanup", 6*time.Minute, "set cache cleanup interval")
+	flag.DurationVar(&c.StorageConfig.CacheExpiration, "cache-expire", 3*time.Minute, "set cache expiration time")
+	flag.DurationVar(&c.StorageConfig.CleanupInterval, "cache-cleanup", 6*time.Minute, "set cache cleanup interval")
 
 	logLevel := flag.Int("log-level", 0, fmt.Sprintf(
 		"debug: %d; info: %d; warn: %d; error: %d",

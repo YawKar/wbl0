@@ -1,14 +1,16 @@
 package main
 
 import (
-	"database/sql"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/nats-io/stan.go"
-	"github.com/patrickmn/go-cache"
+	pb "github.com/yawkar/wbl0/pkg/proto"
 	"github.com/yawkar/wbl0/pkg/storage"
+	"google.golang.org/protobuf/proto"
 )
 
 func main() {
@@ -18,20 +20,11 @@ func main() {
 	setupGlobalLogger(&config.LogConfig)
 	slog.Debug("config:", config)
 
-	// create db connection
-	db, err := storage.MkDb(&config.DbConfig)
+	// make storage
+	store, err := storage.MkStorage(&config.StorageConfig, false)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	// create cache
-	cache, err := storage.MkCache(&config.CacheConfig)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	// populate cache from db
-	// TODO
 
 	// connect to nats-streaming cluster and subscribe
 	sc, err := stan.Connect(
@@ -42,13 +35,27 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to connect to nats-streaming cluster!", err)
 	}
-	sc.Subscribe("orders", mkMsgHandler(db, cache), stan.SetManualAckMode())
+	sc.Subscribe("orders", mkMsgHandler(store))
+
+	// dummy wait
+	boom := time.After(time.Hour)
+	for range boom {
+		fmt.Println("That's all folks!")
+		return
+	}
 }
 
-func mkMsgHandler(db *sql.DB, cache *cache.Cache) func(*stan.Msg) {
+func mkMsgHandler(store *storage.Storage) func(*stan.Msg) {
 	return func(m *stan.Msg) {
-		slog.Debug("received a message:", m)
-		log.Printf("message: %s\n", string(m.Data))
+		slog.Debug("received a nats message:", "message", m)
+		order := &pb.Order{}
+		if err := proto.Unmarshal(m.Data, order); err != nil {
+			slog.Error("Couldn't unmarshal message!", "error", err)
+		} else if err := deepInsertOrder(store, order); err != nil {
+			slog.Error("Couldn't insert order!", "error", err)
+		} else {
+			slog.Debug("Successfully inserted order", "uuid", order.OrderUid)
+		}
 	}
 }
 
