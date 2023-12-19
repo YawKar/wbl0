@@ -16,6 +16,7 @@ type Config struct {
 type PublisherConfig struct {
 	spamDuration time.Duration
 	spamRate     time.Duration
+	seed         int64
 }
 
 type NatsConfig struct {
@@ -31,6 +32,7 @@ type LogConfig struct {
 func setAndParseFlagsIntoConfig() (c Config) {
 	flag.DurationVar(&c.spamDuration, "spam-duration", 1*time.Minute, "set spam duration")
 	flag.DurationVar(&c.spamRate, "spam-rate", 1*time.Second, "set spam rate (2s means 1 message every 2 seconds)")
+	flag.Int64Var(&c.seed, "seed", 42, "set seed for faker")
 
 	flag.StringVar(&c.NatsConfig.natsUrl, "nats-url", "nats://127.0.0.1:4222",
 		"set nats-streaming node's url")
