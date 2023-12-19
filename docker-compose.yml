@@ -17,5 +17,9 @@ services:
         "--cluster_id",
         "${NATS_CLUSTER_ID}",
         "--store",
-        "${NATS_STORE}"
+        "${NATS_STORE}",
+        "--addr",
+        "${NATS_ADDR}",
+        "--port",
+        "${NATS_PORT}"
       ]
