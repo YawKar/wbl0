@@ -87,7 +87,7 @@ func genItems(faker *gofakeit.Faker, trackNumber string) []*pb.Item {
 		items[i] = new(pb.Item)
 		it := items[i]
 		product := faker.Product()
-		it.ChrtId = fmt.Sprint(faker.Uint32())
+		it.ChrtId = faker.Int64()
 		it.TrackNumber = trackNumber
 		it.Price = int64(product.Price)
 		it.Rid = faker.UUID()

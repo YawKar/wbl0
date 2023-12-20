@@ -4,7 +4,7 @@ package wbl;
 option go_package = "pkg/proto";
 
 message Item {
-  string chrt_id = 1;
+  int64 chrt_id = 1;
   string track_number = 2;
   int64 price = 3;
   string rid = 4;

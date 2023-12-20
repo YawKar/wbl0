@@ -9,10 +9,10 @@ import (
 
 func deepInsertOrder(store *storage.Storage, order *pb.Order) error {
 	if store == nil {
-		errors.New("Store is nil!")
+		return errors.New("store is nil")
 	}
 	if order == nil {
-		errors.New("Order is nil!")
+		return errors.New("order is nil")
 	}
 
 	orderM, err := mapOrderToModel(order)
@@ -52,7 +52,7 @@ func deepInsertOrder(store *storage.Storage, order *pb.Order) error {
 	}
 	for _, itemM := range itemsM {
 		if itemM == nil {
-			return errors.New("One of items is nil!")
+			return errors.New("one of items is nil")
 		}
 		err := store.InsertItem(itemM)
 		if err != nil {

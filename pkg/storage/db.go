@@ -1,22 +1,21 @@
 package storage
 
 import (
-	"database/sql"
 	"log"
 
-	"github.com/lib/pq"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 type dbConfig struct {
 	DbUrl string
 }
 
-func mkDb(c *dbConfig) (*sql.DB, error) {
-	pqc, err := pq.NewConnector(c.DbUrl)
+func mkDb(c *dbConfig) (*sqlx.DB, error) {
+	db, err := sqlx.Open("postgres", c.DbUrl)
 	if err != nil {
 		return nil, err
 	}
-	db := sql.OpenDB(pqc)
 	if err = db.Ping(); err != nil {
 		log.Fatalln("Couldn't ping db:", err)
 	}

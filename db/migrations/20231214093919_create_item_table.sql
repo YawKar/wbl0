@@ -1,11 +1,11 @@
 -- migrate:up
 
 CREATE TABLE
-    items (
+    item (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         order_uid UUID NOT NULL REFERENCES "order",
         chrt_id BIGINT NOT NULL,
-        track_number CHAR(20) NOT NULL,
+        track_number CHAR(75) NOT NULL,
         price BIGINT NOT NULL,
         rid UUID NOT NULL,
         name CHAR(50) NOT NULL,
@@ -19,4 +19,4 @@ CREATE TABLE
 
 -- migrate:down
 
-DROP TABLE items;
+DROP TABLE item;
