@@ -51,7 +51,7 @@ func mkMsgHandler(store *storage.Storage) func(*stan.Msg) {
 		order := &pb.Order{}
 		if err := proto.Unmarshal(m.Data, order); err != nil {
 			slog.Error("Couldn't unmarshal message!", "error", err)
-		} else if err := deepInsertOrder(store, order); err != nil {
+		} else if err := insertOrderMessage(store, order); err != nil {
 			slog.Error("Couldn't insert order!", "error", err)
 		} else {
 			slog.Debug("Successfully inserted order", "uuid", order.OrderUid)

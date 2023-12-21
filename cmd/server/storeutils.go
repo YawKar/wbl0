@@ -7,7 +7,7 @@ import (
 	"github.com/yawkar/wbl0/pkg/storage"
 )
 
-func deepInsertOrder(store *storage.Storage, order *pb.Order) error {
+func insertOrderMessage(store *storage.Storage, order *pb.Order) error {
 	if store == nil {
 		return errors.New("store is nil")
 	}
