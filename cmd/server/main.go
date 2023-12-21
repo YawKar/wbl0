@@ -1,12 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 	"time"
 
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/google/uuid"
 	"github.com/nats-io/stan.go"
 	pb "github.com/yawkar/wbl0/pkg/proto"
 	"github.com/yawkar/wbl0/pkg/storage"
@@ -37,11 +42,129 @@ func main() {
 	}
 	sc.Subscribe("orders", mkMsgHandler(store))
 
+	// setup orderRes env
+	orderRes := OrderResource{store: store}
+
+	// setup gin server
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Mount("/order", orderRes.Routes())
 	// dummy wait
 	boom := time.After(time.Hour)
 	for range boom {
 		fmt.Println("That's all folks!")
 		return
+	}
+}
+
+type OrderResource struct {
+	store *storage.Storage
+}
+
+func (o *OrderResource) Routes() chi.Router {
+	r := chi.NewRouter()
+	r.Route(
+		"/{uuid:/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i}",
+		func(r chi.Router) {
+			r.Get("/", o.hGetOrder)
+			r.Get("/payment", o.hGetOrderPayment)
+			r.Get("/delivery", o.hGetOrderDelivery)
+			r.Get("/items", o.hGetOrderItems)
+		},
+	)
+	return r
+}
+
+func (h *OrderResource) hGetOrder(w http.ResponseWriter, r *http.Request) {
+	uuidParam := chi.URLParam(r, "uuid")
+	if uuidParam == "" {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	uuid, err := uuid.Parse(uuidParam)
+	if err != nil {
+		http.Error(w, "provided uuid isn't correct uuid", http.StatusBadRequest)
+		return
+	}
+	order, err := h.store.GetOrder(uuid)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("order with uuid = %s wasn't found", uuid), http.StatusNotFound)
+		return
+	}
+	if data, err := json.Marshal(order); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	} else {
+		w.Write(data)
+	}
+}
+
+func (h *OrderResource) hGetOrderPayment(w http.ResponseWriter, r *http.Request) {
+	uuidParam := chi.URLParam(r, "uuid")
+	if uuidParam == "" {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	uuid, err := uuid.Parse(uuidParam)
+	if err != nil {
+		http.Error(w, "provided uuid isn't correct uuid", http.StatusBadRequest)
+		return
+	}
+	payment, err := h.store.GetPayment(uuid);
+	if err != nil {
+		http.Error(w, fmt.Sprintf("order with uuid = %s wasn't found", uuid), http.StatusNotFound)
+		return
+	}
+	if data, err := json.Marshal(payment); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	} else {
+		w.Write(data)
+	}
+}
+
+func (h *OrderResource) hGetOrderDelivery(w http.ResponseWriter, r *http.Request) {
+	uuidParam := chi.URLParam(r, "uuid")
+	if uuidParam == "" {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	uuid, err := uuid.Parse(uuidParam)
+	if err != nil {
+		http.Error(w, "provided uuid isn't correct uuid", http.StatusBadRequest)
+		return
+	}
+	delivery, err := h.store.GetDelivery(uuid);
+	if err != nil {
+		http.Error(w, fmt.Sprintf("order with uuid = %s wasn't found", uuid), http.StatusNotFound)
+		return
+	}
+	if data, err := json.Marshal(delivery); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	} else {
+		w.Write(data)
+	}
+}
+
+func (h *OrderResource) hGetOrderItems(w http.ResponseWriter, r *http.Request) {
+	uuidParam := chi.URLParam(r, "uuid")
+	if uuidParam == "" {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	uuid, err := uuid.Parse(uuidParam)
+	if err != nil {
+		http.Error(w, "provided uuid isn't correct uuid", http.StatusBadRequest)
+		return
+	}
+	items, err := h.store.GetItems(uuid);
+	if err != nil {
+		http.Error(w, fmt.Sprintf("order with uuid = %s wasn't found", uuid), http.StatusNotFound)
+		return
+	}
+	if data, err := json.Marshal(items); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	} else {
+		w.Write(data)
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/yawkar/wbl0/pkg/models"
@@ -160,4 +161,20 @@ func insertItem(db *sqlx.DB, item *models.Item) error {
 		return err
 	}
 	return tx.Commit()
+}
+
+func getOrder(db *sqlx.DB, orderUid uuid.UUID) (*models.Order, error) {
+
+}
+
+func getPayment(db *sqlx.DB, orderUid uuid.UUID) (*models.Payment, error) {
+
+}
+
+func getDelivery(db *sqlx.DB, orderUid uuid.UUID) (*models.Delivery, error) {
+
+}
+
+func getItems(db *sqlx.DB, orderUid uuid.UUID) ([]*models.Item, error) {
+
 }

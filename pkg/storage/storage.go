@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/patrickmn/go-cache"
 	"github.com/yawkar/wbl0/pkg/models"
@@ -68,4 +69,32 @@ func (s *Storage) InsertItem(item *models.Item) error {
 	}
 	cacheItem(s.cache, item)
 	return nil
+}
+
+func (s *Storage) GetOrder(uuid uuid.UUID) (*models.Order, error) {
+	if order, found := getCachedOrder(s.cache, uuid); found {
+		return order, nil
+	}
+	return getOrder(s.db, uuid)
+}
+
+func (s *Storage) GetPayment(uuid uuid.UUID) (*models.Payment, error) {
+	if payment, found := getCachedPayment(s.cache, uuid); found {
+		return payment, nil
+	}
+	return getPayment(s.db, uuid)
+}
+
+func (s *Storage) GetDelivery(uuid uuid.UUID) (*models.Delivery, error) {
+	if delivery, found := getCachedDelivery(s.cache, uuid); found {
+		return delivery, nil
+	}
+	return getDelivery(s.db, uuid)
+}
+
+func (s *Storage) GetItems(uuid uuid.UUID) ([]*models.Item, error) {
+	if items, found := getCachedItems(s.cache, uuid); found {
+		return items, nil
+	}
+	return getItems(s.db, uuid)
 }
