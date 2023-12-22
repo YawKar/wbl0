@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"errors"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -29,10 +30,37 @@ func MkStorage(c *StorageConfig, loadCaches bool) (*Storage, error) {
 	if err != nil {
 		return nil, errors.Join(errors.New("couldn't make cache"), err)
 	}
+	if loadCaches {
+		if err := loadCacheFromDb(cache, db); err != nil {
+			slog.Debug("something went wrong with loading cache from db", "err", err)
+		}
+	}
 	return &Storage{
 		db:    db,
 		cache: cache,
 	}, nil
+}
+
+func loadCacheFromDb(cache *cache.Cache, db *sqlx.DB) error {
+	orders, err := getRandomOrders(db, 100)
+	if err != nil {
+		return errors.Join(errors.New("failed to load cache from db"), err)
+	}
+	for _, order := range orders {
+		cacheOrder(cache, order)
+		if payment, err := getPayment(db, order.OrderUid); err == nil {
+			cachePayment(cache, payment)
+		}
+		if delivery, err := getDelivery(db, order.OrderUid); err == nil {
+			cacheDelivery(cache, delivery)
+		}
+		if items, err := getItems(db, order.OrderUid); err == nil {
+			for _, item := range items {
+				cacheItem(cache, item)
+			}
+		}
+	}
+	return nil
 }
 
 func (s *Storage) BeginTx() (*sql.Tx, error) {

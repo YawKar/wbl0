@@ -23,7 +23,7 @@ func main() {
 	slog.Debug("config:", config)
 
 	// make storage
-	store, err := storage.MkStorage(&config.StorageConfig, false)
+	store, err := storage.MkStorage(&config.StorageConfig, true)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -234,3 +234,21 @@ func getItems(db *sqlx.DB, orderUid uuid.UUID) ([]*models.Item, error) {
 	}
 	return m, nil
 }
+
+var selectFirstNOrdersSQL string = `
+SELECT *
+  FROM "order"
+ LIMIT $1;`
+
+func getRandomOrders(db *sqlx.DB, amount int) ([]*models.Order, error) {
+	tx, err := db.BeginTxx(context.TODO(), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	m := make([]*models.Order, 0)
+	if err := tx.Select(&m, selectFirstNOrdersSQL, amount); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
