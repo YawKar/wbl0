@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -50,11 +49,8 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Mount("/order", orderRes.Routes())
-	// dummy wait
-	boom := time.After(time.Hour)
-	for range boom {
-		fmt.Println("That's all folks!")
-		return
+	if err := http.ListenAndServe("localhost:8080", r); err != nil {
+		log.Fatalln("server failed to serve", "err", err)
 	}
 }
 
@@ -65,7 +61,7 @@ type OrderResource struct {
 func (o *OrderResource) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Route(
-		"/{uuid:/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i}",
+		"/{uuid:(?i)[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}}",
 		func(r chi.Router) {
 			r.Get("/", o.hGetOrder)
 			r.Get("/payment", o.hGetOrderPayment)
@@ -77,6 +73,7 @@ func (o *OrderResource) Routes() chi.Router {
 }
 
 func (h *OrderResource) hGetOrder(w http.ResponseWriter, r *http.Request) {
+	slog.Info("gotcha")
 	uuidParam := chi.URLParam(r, "uuid")
 	if uuidParam == "" {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -112,7 +109,7 @@ func (h *OrderResource) hGetOrderPayment(w http.ResponseWriter, r *http.Request)
 	}
 	payment, err := h.store.GetPayment(uuid);
 	if err != nil {
-		http.Error(w, fmt.Sprintf("order with uuid = %s wasn't found", uuid), http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("payment details for order with uuid = %s weren't found", uuid), http.StatusNotFound)
 		return
 	}
 	if data, err := json.Marshal(payment); err != nil {
@@ -135,7 +132,7 @@ func (h *OrderResource) hGetOrderDelivery(w http.ResponseWriter, r *http.Request
 	}
 	delivery, err := h.store.GetDelivery(uuid);
 	if err != nil {
-		http.Error(w, fmt.Sprintf("order with uuid = %s wasn't found", uuid), http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("delivery details for order with uuid = %s weren't found", uuid), http.StatusNotFound)
 		return
 	}
 	if data, err := json.Marshal(delivery); err != nil {
@@ -158,7 +155,7 @@ func (h *OrderResource) hGetOrderItems(w http.ResponseWriter, r *http.Request) {
 	}
 	items, err := h.store.GetItems(uuid);
 	if err != nil {
-		http.Error(w, fmt.Sprintf("order with uuid = %s wasn't found", uuid), http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("items for order with uuid = %s weren't found", uuid), http.StatusNotFound)
 		return
 	}
 	if data, err := json.Marshal(items); err != nil {

@@ -163,18 +163,74 @@ func insertItem(db *sqlx.DB, item *models.Item) error {
 	return tx.Commit()
 }
 
-func getOrder(db *sqlx.DB, orderUid uuid.UUID) (*models.Order, error) {
+var selectOrderSQL string = `
+SELECT *
+  FROM "order"
+ WHERE order_uid = $1;`
 
+func getOrder(db *sqlx.DB, orderUid uuid.UUID) (*models.Order, error) {
+	tx, err := db.BeginTxx(context.TODO(), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	m := &models.Order{}
+	if err := tx.Get(m, selectOrderSQL, orderUid); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
+
+var selectPaymentSQL string = `
+SELECT *
+  FROM payment
+ WHERE transaction = $1;`
 
 func getPayment(db *sqlx.DB, orderUid uuid.UUID) (*models.Payment, error) {
-
+	tx, err := db.BeginTxx(context.TODO(), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	m := &models.Payment{}
+	if err := tx.Get(m, selectPaymentSQL, orderUid); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
+
+var selectDeliverySQL string = `
+SELECT *
+  FROM delivery
+ WHERE order_uid = $1;`
 
 func getDelivery(db *sqlx.DB, orderUid uuid.UUID) (*models.Delivery, error) {
-
+	tx, err := db.BeginTxx(context.TODO(), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	m := &models.Delivery{}
+	if err := tx.Get(m, selectDeliverySQL, orderUid); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
-func getItems(db *sqlx.DB, orderUid uuid.UUID) ([]*models.Item, error) {
+var selectItemsSQL string = `
+SELECT *
+  FROM item
+ WHERE order_uid = $1;`
 
+func getItems(db *sqlx.DB, orderUid uuid.UUID) ([]*models.Item, error) {
+	tx, err := db.BeginTxx(context.TODO(), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	m := make([]*models.Item, 0)
+	if err := tx.Select(&m, selectItemsSQL, orderUid); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
