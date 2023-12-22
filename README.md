@@ -13,6 +13,7 @@
 - Миграции базы данных накатываются через `dbmate`
 - Protobuff модели компилируются через хелпер скрипт `compile_protos.sh`
 # View
+![example_gif](https://raw.githubusercontent.com/yawkar/wbl0/media/media/ui-optimized.gif)
 
 # CLI конфигурация
 ## cmd/server
