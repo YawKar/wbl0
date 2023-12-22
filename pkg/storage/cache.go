@@ -52,6 +52,12 @@ func cacheDelivery(cache *cache.Cache, delivery *models.Delivery) {
 	cache.SetDefault(toCacheDeliveryKey(delivery.OrderUid), delivery)
 }
 
+func cacheItems(cache *cache.Cache, items []*models.Item) {
+	for _, item := range items {
+		cacheItem(cache, item)
+	}
+}
+
 func cacheItem(cache *cache.Cache, item *models.Item) {
 	itemsListKey := toCacheOrderItemsListKey(item.OrderUid)
 	itemsList := make([]int64, 0)

@@ -55,9 +55,7 @@ func loadCacheFromDb(cache *cache.Cache, db *sqlx.DB) error {
 			cacheDelivery(cache, delivery)
 		}
 		if items, err := getItems(db, order.OrderUid); err == nil {
-			for _, item := range items {
-				cacheItem(cache, item)
-			}
+			cacheItems(cache, items)
 		}
 	}
 	return nil
@@ -103,26 +101,46 @@ func (s *Storage) GetOrder(uuid uuid.UUID) (*models.Order, error) {
 	if order, found := getCachedOrder(s.cache, uuid); found {
 		return order, nil
 	}
-	return getOrder(s.db, uuid)
+	if order, err := getOrder(s.db, uuid); err != nil {
+		return nil, err
+	} else {
+		cacheOrder(s.cache, order)
+		return order, nil
+	}
 }
 
 func (s *Storage) GetPayment(uuid uuid.UUID) (*models.Payment, error) {
 	if payment, found := getCachedPayment(s.cache, uuid); found {
 		return payment, nil
 	}
-	return getPayment(s.db, uuid)
+	if payment, err := getPayment(s.db, uuid); err != nil {
+		return nil, err
+	} else {
+		cachePayment(s.cache, payment)
+		return payment, nil
+	}
 }
 
 func (s *Storage) GetDelivery(uuid uuid.UUID) (*models.Delivery, error) {
 	if delivery, found := getCachedDelivery(s.cache, uuid); found {
 		return delivery, nil
 	}
-	return getDelivery(s.db, uuid)
+	if delivery, err := getDelivery(s.db, uuid); err != nil {
+		return nil, err
+	} else {
+		cacheDelivery(s.cache, delivery)
+		return delivery, nil
+	}
 }
 
 func (s *Storage) GetItems(uuid uuid.UUID) ([]*models.Item, error) {
 	if items, found := getCachedItems(s.cache, uuid); found {
 		return items, nil
 	}
-	return getItems(s.db, uuid)
+	if items, err := getItems(s.db, uuid); err != nil {
+		return nil, err
+	} else {
+		cacheItems(s.cache, items)
+		return items, nil
+	}
 }
