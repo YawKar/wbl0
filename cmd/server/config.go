@@ -10,9 +10,15 @@ import (
 )
 
 type Config struct {
+	ServerConfig
 	NatsConfig
 	storage.StorageConfig
 	LogConfig
+}
+
+type ServerConfig struct {
+	addr string
+	port uint
 }
 
 type NatsConfig struct {
@@ -26,6 +32,9 @@ type LogConfig struct {
 }
 
 func setAndParseFlagsIntoConfig() (c Config) {
+	flag.StringVar(&c.ServerConfig.addr, "addr", "localhost", "set server's address (server listens to and serves addr:port)")
+	flag.UintVar(&c.ServerConfig.port, "port", 8080, "set server's port (server listens to and serves addr:port)")
+
 	flag.StringVar(&c.NatsConfig.natsUrl, "nats-url", "nats://127.0.0.1:4222",
 		"set nats-streaming node's url")
 	flag.StringVar(&c.NatsConfig.clusterId, "cluster-id", "default_cluster",
