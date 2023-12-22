@@ -49,7 +49,7 @@ func main() {
 		log.Fatalln("Failed to init view resource", "err", err)
 	}
 
-	// setup gin server
+	// setup server
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
