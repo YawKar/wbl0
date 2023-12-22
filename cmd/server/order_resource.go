@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -11,11 +10,15 @@ import (
 	"github.com/yawkar/wbl0/pkg/storage"
 )
 
-type OrderResource struct {
+type orderResource struct {
 	store *storage.Storage
 }
 
-func (o *OrderResource) Routes() chi.Router {
+func NewOrderResource(store *storage.Storage) (HandlersResource, error) {
+	return &orderResource{store: store}, nil
+}
+
+func (o *orderResource) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Route(
 		"/{uuid:(?i)[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}}",
@@ -29,8 +32,7 @@ func (o *OrderResource) Routes() chi.Router {
 	return r
 }
 
-func (h *OrderResource) hGetOrder(w http.ResponseWriter, r *http.Request) {
-	slog.Info("gotcha")
+func (h *orderResource) hGetOrder(w http.ResponseWriter, r *http.Request) {
 	uuidParam := chi.URLParam(r, "uuid")
 	if uuidParam == "" {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -53,7 +55,7 @@ func (h *OrderResource) hGetOrder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *OrderResource) hGetOrderPayment(w http.ResponseWriter, r *http.Request) {
+func (h *orderResource) hGetOrderPayment(w http.ResponseWriter, r *http.Request) {
 	uuidParam := chi.URLParam(r, "uuid")
 	if uuidParam == "" {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -76,7 +78,7 @@ func (h *OrderResource) hGetOrderPayment(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (h *OrderResource) hGetOrderDelivery(w http.ResponseWriter, r *http.Request) {
+func (h *orderResource) hGetOrderDelivery(w http.ResponseWriter, r *http.Request) {
 	uuidParam := chi.URLParam(r, "uuid")
 	if uuidParam == "" {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -99,7 +101,7 @@ func (h *OrderResource) hGetOrderDelivery(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func (h *OrderResource) hGetOrderItems(w http.ResponseWriter, r *http.Request) {
+func (h *orderResource) hGetOrderItems(w http.ResponseWriter, r *http.Request) {
 	uuidParam := chi.URLParam(r, "uuid")
 	if uuidParam == "" {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

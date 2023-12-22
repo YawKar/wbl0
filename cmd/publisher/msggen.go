@@ -94,7 +94,7 @@ func genItems(faker *gofakeit.Faker, trackNumber string) []*pb.Item {
 		it.Name = product.Name
 		it.Sale = int64(faker.IntRange(0, 99))
 		it.Size = fmt.Sprint(faker.IntRange(1, 4444))
-		it.TotalPrice = int64(product.Price * (float64(it.Sale) / 100.0))
+		it.TotalPrice = int64(product.Price * (1.0 - float64(it.Sale) / 100.0))
 		it.NmId = int64(faker.Uint32())
 		it.Brand = faker.Company()
 		it.Status = int32(faker.HTTPStatusCode())

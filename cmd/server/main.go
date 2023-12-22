@@ -39,14 +39,22 @@ func main() {
 	}
 	sc.Subscribe("orders", mkMsgHandler(store))
 
-	// setup orderRes env
-	orderRes := OrderResource{store: store}
+	// setup resources
+	orderRes, err := NewOrderResource(store)
+	if err != nil {
+		log.Fatalln("Failed to init order resource", "err", err)
+	}
+	viewRes, err := NewViewResource(store)
+	if err != nil {
+		log.Fatalln("Failed to init view resource", "err", err)
+	}
 
 	// setup gin server
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Mount("/order", orderRes.Routes())
+	r.Mount("/view", viewRes.Routes())
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.addr, config.port), r); err != nil {
 		log.Fatalln("server failed to serve", "err", err)
 	}
