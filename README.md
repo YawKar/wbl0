@@ -13,6 +13,8 @@
 - Миграции базы данных накатываются через `dbmate`
 - Protobuff модели компилируются через хелпер скрипт `compile_protos.sh`
 - Полностью готовая рабочая среда в `devcontainer.json` на `ubuntu` с `docker-in-docker`
+- Run 'nd Go `docker-compose.prod.yml`, в котором при развёртке накатываются миграции и поднимается всё всё всё, наружу торчит сервер и постгря
+- `docker-compose.dev.yml` поднимает только nats-streaming и postgres, а также накатывает миграции, сервисы поднимаются ручками через CLI args
 # View
 ![example_gif](https://raw.githubusercontent.com/yawkar/wbl0/media/media/ui-optimized.gif)
 # How to run
