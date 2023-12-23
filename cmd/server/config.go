@@ -49,8 +49,8 @@ func setAndParseFlagsIntoConfig() (c Config) {
 
 	logLevel := flag.Int("log-level", 0, fmt.Sprintf(
 		"debug: %d; info: %d; warn: %d; error: %d",
-		slog.LevelInfo,
 		slog.LevelDebug,
+		slog.LevelInfo,
 		slog.LevelWarn,
 		slog.LevelError,
 	))
