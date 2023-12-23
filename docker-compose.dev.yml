@@ -1,0 +1,40 @@
+# should be 'up'ped with --env-file .dev.env
+version: '3'
+
+services:
+
+  database:
+    image: "postgres:16.1-bullseye"
+
+    env_file:
+      - .dev.env
+    ports:
+      - "$POSTGRES_PORT:$POSTGRES_PORT"
+    command: [ "-p", "$POSTGRES_PORT" ]
+
+  dbmate-migrations:
+    depends_on:
+      - database
+    image: "ghcr.io/amacneil/dbmate:2.10"
+
+    env_file:
+      - .dev.env
+    volumes:
+      - ./db:/db:ro
+    entrypoint: [ "dbmate", "up" ]
+
+  nats-stream:
+    image: "nats-streaming:0.25.6-alpine"
+    ports:
+      - "$NATS_PORT:$NATS_PORT"
+    command:
+      [
+        "--cluster_id",
+        "$NATS_CLUSTER_ID",
+        "--store",
+        "$NATS_STORE",
+        "--addr",
+        "$NATS_ADDR",
+        "--port",
+        "$NATS_PORT"
+      ]
