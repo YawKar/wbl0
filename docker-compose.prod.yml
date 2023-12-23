@@ -1,0 +1,89 @@
+# should be 'up'ped with --env-file .prod.env
+version: '3'
+
+services:
+
+  database:
+    image: "postgres:16.1-bullseye"
+
+    env_file:
+      - .prod.env
+    ports:
+      - "$POSTGRES_PORT:$POSTGRES_PORT"
+    command: [ "-p", "$POSTGRES_PORT" ]
+
+  dbmate-migrations:
+    depends_on:
+      - database
+    image: "ghcr.io/amacneil/dbmate:2.10"
+
+    env_file:
+      - .prod.env
+    volumes:
+      - ./db:/db:ro
+    entrypoint: [ "dbmate", "up" ]
+
+  nats-stream:
+    image: "nats-streaming:0.25.6-alpine"
+
+    command:
+      [
+        "--cluster_id",
+        "$NATS_CLUSTER_ID",
+        "--store",
+        "$NATS_STORE",
+        "--addr",
+        "$NATS_ADDR",
+        "--port",
+        "$NATS_PORT"
+      ]
+
+  wbl-server:
+    depends_on:
+      dbmate-migrations:
+        condition: service_completed_successfully
+        required: true
+      database:
+        condition: service_started
+        restart: true
+    build:
+      context: .
+      dockerfile: server.Dockerfile
+
+    ports:
+      - "$WBL_SERVER_PORT:$WBL_SERVER_PORT"
+    command:
+      [
+        "-client-id",
+        "$WBL_SERVER_CLIENT_ID",
+        "-cluster-id",
+        "$WBL_SERVER_CLUSTER_ID",
+        "-nats-url",
+        "$WBL_SERVER_NATS_URL",
+        "-db-url",
+        "$WBL_SERVER_DATABASE_URL",
+        "-addr",
+        "$WBL_SERVER_ADDR",
+        "-port",
+        "$WBL_SERVER_PORT"
+      ]
+
+  wbl-publisher:
+    profiles:
+      - with_publisher
+    depends_on:
+      - nats-stream
+      - wbl-server
+    build:
+      context: .
+      dockerfile: publisher.Dockerfile
+
+    command:
+      [
+        "-client-id",
+        "$WBL_PUBLISHER_CLIENT_ID",
+        "-cluster-id",
+        "$WBL_PUBLISHER_CLUSTER_ID",
+        "-nats-url",
+        "$WBL_PUBLISHER_NATS_URL"
+      ]
