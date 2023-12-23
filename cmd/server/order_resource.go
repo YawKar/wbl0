@@ -51,6 +51,7 @@ func (h *orderResource) hGetOrder(w http.ResponseWriter, r *http.Request) {
 	if data, err := json.Marshal(order); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	} else {
+		w.Header().Add("Content-Type", "application/json")
 		w.Write(data)
 	}
 }
@@ -74,6 +75,7 @@ func (h *orderResource) hGetOrderPayment(w http.ResponseWriter, r *http.Request)
 	if data, err := json.Marshal(payment); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	} else {
+		w.Header().Add("Content-Type", "application/json")
 		w.Write(data)
 	}
 }
@@ -97,6 +99,7 @@ func (h *orderResource) hGetOrderDelivery(w http.ResponseWriter, r *http.Request
 	if data, err := json.Marshal(delivery); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	} else {
+		w.Header().Add("Content-Type", "application/json")
 		w.Write(data)
 	}
 }
@@ -120,6 +123,7 @@ func (h *orderResource) hGetOrderItems(w http.ResponseWriter, r *http.Request) {
 	if data, err := json.Marshal(items); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	} else {
+		w.Header().Add("Content-Type", "application/json")
 		w.Write(data)
 	}
 }
