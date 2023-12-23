@@ -12,6 +12,7 @@
 - Nats-streaming & Postgres поднимаются в `docker compose`
 - Миграции базы данных накатываются через `dbmate`
 - Protobuff модели компилируются через хелпер скрипт `compile_protos.sh`
+- Полностью готовая рабочая среда в `devcontainer.json` на `ubuntu` с `docker-in-docker`
 # View
 ![example_gif](https://raw.githubusercontent.com/yawkar/wbl0/media/media/ui-optimized.gif)
 
