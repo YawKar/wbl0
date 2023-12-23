@@ -15,7 +15,19 @@
 - Полностью готовая рабочая среда в `devcontainer.json` на `ubuntu` с `docker-in-docker`
 # View
 ![example_gif](https://raw.githubusercontent.com/yawkar/wbl0/media/media/ui-optimized.gif)
-
+# How to run
+Без publisher сервиса
+```bash
+./up_prod_docker_env.sh
+# а для сворачивания:
+./down_prod_docker_env.sh
+```
+С publisher сервисом
+```bash
+./up_prod_docker_env.sh --profile with_publisher
+# а для сворачивания:
+./down_prod_docker_env.sh --profile with_publisher
+```
 # CLI конфигурация
 ## cmd/server
 ```
